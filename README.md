@@ -83,6 +83,27 @@ The query used to find root files:
 'root' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false
 ```
 
+## 📌 Important: No Sorting or Filtering Logic
+
+This workflow operates on a simple, strict principle:
+
+> **Your Drive root should contain folders only — never files.**
+
+There is **no content parsing, no format detection, and no sorting logic**. Every file found directly in the root gets moved to the sweeper folder, without exception. It doesn't matter if it's a Google Doc, a PDF, a Gemini export, or anything else.
+
+If you intentionally keep files at the root level, **they will be swept**. The recommended approach is to organize everything into subfolders and let this workflow enforce that discipline automatically.
+
+---
+
+## 🔮 Possible Future Improvements
+
+The current version is intentionally minimal. Here are directions the workflow could evolve:
+
+- **Format-based routing** — detect the file type (e.g. `mimeType`) and move files to different destination folders automatically (Docs → `/Docs`, PDFs → `/PDFs`, Gemini exports → `/AI`, etc.)
+- **Content-based sorting** — use an AI node to read or summarize the file content and route it to a semantically appropriate folder
+- **Allowlist / exclusion rules** — skip files matching a specific name pattern or created by a specific app
+- **Notification on sweep** — send a daily digest (email, Telegram, Slack) listing what was moved
+
 ---
 
 ## 📁 Repository Structure
