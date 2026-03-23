@@ -1,0 +1,117 @@
+{
+  "name": "Gdrive Root Sweeper (Guide)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🚀 Quick Start Guide\n\n**Step 1: Connect Google Drive**\n(Required if you are new to n8n)\n1. Double-click the node named **'Find Root Files'**.\n2. In the 'Credentials' section, click the dropdown and select **Create New**.\n3. Choose **Google Drive OAuth2 API**.\n4. Follow the prompts to sign in with your Google account.\n\n---\n\n**Step 2: Set Destination Folder**\nThe node **'Move to Sweeper folder'** uses a variable for the destination.\n* **Best Practice:** Go to *Settings > Environment Variables* and add `SWEEPER_FOLDER_ID` with your folder's ID.\n* **Quick Fix:** Open the node, delete the text `{{ $env... }}`, and simply select a folder from the 'List' view.",
+        "height": 420,
+        "width": 450,
+        "color": 4
+      },
+      "id": "43143cb8-a20a-475f-8136-1b9b72527579",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "id": "a707513b-d7c2-4821-8db2-6a00d07e64e1",
+      "name": "Trigger: Every Day at 3AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [64, 480]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "='root' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false",
+        "returnAll": true,
+        "filter": {
+          "whatToSearch": "files"
+        },
+        "options": {
+          "fields": ["id", "name"]
+        }
+      },
+      "id": "a172948a-8ead-4f15-9f25-bda1e065b22c",
+      "name": "Find Root Files",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [288, 480],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": "={{ $json.id }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": "={{ $env.SWEEPER_FOLDER_ID }}"
+      },
+      "id": "a1435d3c-e161-4ff2-9d85-6213c4acf8d5",
+      "name": "Move to Sweeper folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [512, 480],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Trigger: Every Day at 3AM": {
+      "main": [
+        [
+          {
+            "node": "Find Root Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Root Files": {
+      "main": [
+        [
+          {
+            "node": "Move to Sweeper folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": ""
+  },
+  "id": "",
+  "tags": []
+}
